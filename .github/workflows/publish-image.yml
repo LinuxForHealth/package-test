@@ -12,6 +12,11 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+      - uses: oprypin/find-latest-tag@v1
+        with:
+          repository: linuxforhealth/package-test
+          releases-only: true
+        id: package-test  # The step ID to refer to later.
       - name: QEMU setup
         uses: docker/setup-qemu-action@v2
       - name: Docker buildx setup
@@ -22,14 +27,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
       - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v3
         with:
           context: .
           platforms: linux/amd64,linux/arm64,linux/s390x
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: linuxforhealth/package-test:${{ steps.package-test.outputs.tag }}
