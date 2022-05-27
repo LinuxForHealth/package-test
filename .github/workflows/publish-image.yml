@@ -12,11 +12,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-      - uses: oprypin/find-latest-tag@v1
-        with:
-          repository: linuxforhealth/package-test
-          releases-only: true
-        id: package-test  # The step ID to refer to later.
       - name: QEMU setup
         uses: docker/setup-qemu-action@v2
       - name: Docker buildx setup
@@ -27,6 +22,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: type=semver,pattern={{version}}          
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
