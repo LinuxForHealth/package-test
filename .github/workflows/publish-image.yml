@@ -33,4 +33,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64,linux/s390x
           push: true
-          tags: package-test:${{ steps.package-test.outputs.tag }}
+          tags: ghcr.io/${{ github.repository }}:${{ steps.package-test.outputs.tag }}
